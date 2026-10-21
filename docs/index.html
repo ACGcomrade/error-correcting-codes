@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Step through Hamming(7,4) encoding and error correction.">
+  <title>Hamming(7,4) / lab</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="hamming.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>> hamming(7,4)</h1>
+      <p class="intro">4 data bits. 3 check bits. 1 correctable error.</p>
+    </header>
+    <form id="controls" class="controls">
+      <label class="message-label" for="message">message [binary] <span id="input-count">4 / 16,384 bits</span>
+        <textarea id="message" rows="3" placeholder="1011 0010" autocomplete="off" spellcheck="false" aria-describedby="input-help input-count">1011</textarea>
+      </label>
+      <label for="probability">flip probability q <output id="probability-value" for="probability">10%</output>
+        <input id="probability" type="range" min="0" max="100" step="0.1" value="10" aria-valuetext="10 percent">
+      </label>
+      <button class="primary" type="submit">[ transmit ]</button>
+      <p id="input-help" class="small muted full">4 bits per block. q applies to every transmitted bit. Transmit to apply changes.</p>
+      <p id="error" class="error full" role="alert" hidden></p>
+    </form>
+    <div class="workspace-bar">
+      <div class="mode-switch" aria-label="Mode">
+        <button id="guided" type="button" aria-pressed="true">[ step ]</button>
+        <button id="explore" type="button" aria-pressed="false">[ experiment ]</button>
+      </div>
+      <label class="block-label" for="block">block <select id="block"></select></label>
+    </div>
+    <p id="message-summary" class="small muted"></p>
+    <nav id="phases" class="phases" aria-label="Stages"></nav>
+    <section id="stage" class="stage" aria-label="Interactive demonstration">
+      <div id="navigation" class="navigation">
+        <button id="previous" type="button" aria-label="Previous step">&lt; prev</button>
+        <span id="step-count" class="sr-only" aria-live="polite"></span>
+        <button id="next" type="button" aria-label="Next step">next &gt;</button>
+      </div>
+      <article id="lesson" aria-labelledby="lesson-title"></article>
+    </section>
+    <p id="announcement" class="sr-only" aria-live="polite"></p>
+    <footer>F₂: 1 + 1 = 0 / positions: 1–7 / syndrome: MSB first</footer>
+  </main>
+</body>
+</html>

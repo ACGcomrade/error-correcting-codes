@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+
+# Publish the finished tutorial PDF; keep authoring sources local.
+*.tex
+*.md
+!README.md
+/overleaf/
