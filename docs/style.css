@@ -8,6 +8,12 @@ h1 { font-size:20px; margin:0 0 4px; }
 h2 { font-size:17px; margin:6px 0 18px; }
 p { margin:10px 0; }
 .intro { margin:0; }
+.lesson-links { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:baseline; gap:10px 24px; margin-bottom:24px; font-size:11px; }
+.lesson-links a { color:inherit; text-underline-offset:3px; }
+.lesson-current { justify-self:start; }
+.lesson-pager { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); column-gap:20px; width:240px; }
+.lesson-prev { grid-column:1; justify-self:start; }
+.lesson-next { grid-column:2; justify-self:end; }
 mark,.cell.active,.bit.active { background:var(--highlight); color:var(--ink); }
 mark { padding:0 3px; }
 .small,.kicker,.matrix-label,.word-caption { font-size:12px; }
@@ -80,10 +86,13 @@ details { margin:18px 0 0; }
 summary { cursor:pointer; font-size:12px; }
 
 footer { font-size:11px; margin-top:26px; }
+footer a { color:inherit; text-underline-offset:3px; }
 .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 [hidden] { display:none !important; }
 @media(max-width:600px) {
   main { padding:20px 14px; }
+  .lesson-links { grid-template-columns:1fr; gap:10px; margin-bottom:20px; }
+  .lesson-pager { justify-self:end; width:min(240px,100%); }
   .stage { grid-template-columns:74px minmax(0,1fr) 74px; gap:12px; }
   article { grid-column:1/-1; grid-row:2; }
   #previous,#next { position:static; margin-top:0; }

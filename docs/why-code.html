@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Watch a barcode become a signal, a checked number, and a product lookup in one continuous animation.">
+  <title>Barcode / why code?</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="why-code.css?v=5">
+  <script defer src="why-code-data.js"></script>
+  <script defer src="why-code.js?v=4"></script>
+</head>
+<body class="barcode-film">
+  <main>
+    <header>
+      <nav class="lesson-links" aria-label="Tutorial navigation">
+        <a class="lesson-current" href="https://github.com/ACGcomrade/error-correcting-codes/blob/main/tutorial_why_code/tutorial_why_code.pdf" aria-label="01 / Why Code? — tutorial PDF">01 / why code?</a>
+        <span class="lesson-pager"><a class="lesson-next" href="qr-code.html" rel="next" aria-label="Next: QR code">qr code →</a></span>
+      </nav>
+      <h1>> barcode</h1>
+      <p class="intro">Watch a printed pattern become a number, a check, and a price.</p>
+    </header>
+    <div class="film-controls">
+      <button id="play" class="primary" type="button" aria-pressed="false">[ play ]</button>
+      <button id="restart" type="button" aria-label="Restart animation">↺ restart</button>
+      <label for="speed">speed <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+      <label class="condition-control" for="scenario">reading <select id="scenario"><option value="clean">normal</option><option value="misread">one digit misread</option></select></label>
+    </div>
+    <div class="timeline-row">
+      <label class="sr-only" for="timeline">Animation time</label>
+      <input id="timeline" type="range" min="0" max="30" step="0.01" value="0" aria-valuetext="0 seconds of 30">
+      <output id="time" for="timeline">00:00 / 00:30</output>
+    </div>
+    <section class="film" aria-label="Continuous barcode animation">
+      <svg id="animation" viewBox="0 0 960 600" role="img" aria-labelledby="animation-title animation-description">
+        <title id="animation-title">From a barcode to the checkout</title>
+        <desc id="animation-description">A scanning light crosses the UPC-A pattern. Its brightness signal produces digits, which move into a weighted checksum. Valid readings enter a store table and produce a receipt. A simulated misread instead requests another scan.</desc>
+      </svg>
+      <div class="subtitle"><span id="cue" class="cue">READY</span><p id="caption">Press play and follow the yellow highlight. Drag the timeline to look closer.</p></div>
+    </section>
+    <noscript><p>Please enable JavaScript to play the animation.</p></noscript>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  </main>
+</body>
+</html>

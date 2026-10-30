@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Follow a QR image into bits, bytes, Reed–Solomon correction, and a recovered message in one continuous animation.">
+  <title>QR code / why code?</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="why-code.css?v=5">
+  <link rel="stylesheet" href="qr-code.css?v=2">
+  <script defer src="vendor/jsQR.js"></script>
+  <script defer src="why-code-data.js"></script>
+  <script defer src="qr-code-data.js?v=1"></script>
+  <script defer src="qr-code.js?v=1"></script>
+</head>
+<body class="barcode-film qr-film">
+  <main>
+    <header>
+      <nav class="lesson-links" aria-label="Tutorial navigation">
+        <a class="lesson-current" href="https://github.com/ACGcomrade/error-correcting-codes/blob/main/tutorial_why_code/tutorial_why_code.pdf" aria-label="01 / Why Code? — tutorial PDF">01 / why code?</a>
+        <span class="lesson-pager"><a class="lesson-prev" href="why-code.html" rel="prev" aria-label="Previous: Barcode">← barcode</a><a class="lesson-next" href="index.html" rel="next" aria-label="Next: Hamming codes">hamming →</a></span>
+      </nav>
+      <h1>> qr code</h1>
+      <p class="intro">Watch a damaged square become a recovered message.</p>
+    </header>
+    <div class="film-controls">
+      <button id="play" class="primary" type="button" aria-pressed="false">[ play ]</button>
+      <button id="restart" type="button" aria-label="Restart animation">↺ restart</button>
+      <label for="speed">speed <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+      <label class="condition-control" for="scenario">reading <select id="scenario"><option value="clean">normal</option><option value="recoverable" selected>small damaged patch</option><option value="unreadable">large damaged patch</option></select></label>
+    </div>
+    <div class="timeline-row">
+      <label class="sr-only" for="timeline">Animation time</label>
+      <input id="timeline" type="range" min="0" max="36" step="0.01" value="0" aria-valuetext="0 seconds of 36">
+      <output id="time" for="timeline">00:00 / 00:36</output>
+    </div>
+    <section class="film" aria-label="Continuous QR code animation">
+      <svg id="animation" viewBox="0 0 960 690" role="img" aria-labelledby="animation-title animation-description">
+        <title id="animation-title">From a damaged QR code to HELLO</title>
+        <desc id="animation-description">Locate the three finder patterns, read and unmask the modules, gather data and error-correction bytes, and recover the text. Too much damage requests another scan.</desc>
+      </svg>
+      <div class="subtitle"><span id="cue" class="cue">READY</span><p id="caption">Press play to follow a damaged QR code. Drag the timeline to look closer.</p></div>
+    </section>
+    <noscript><p>Please enable JavaScript to play the animation.</p></noscript>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  </main>
+</body>
+</html>

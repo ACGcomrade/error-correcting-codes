@@ -1,0 +1,14 @@
+#animation .byte { font-size:17px; font-variant-numeric:tabular-nums; }
+#animation .bit { font-size:14px; font-variant-numeric:tabular-nums; }
+#animation .message-letter { font-size:36px; font-weight:bold; }
+#animation .parity-box { fill:#fff9da; stroke:#000; stroke-width:1.2; }
+#animation .corrected-box { fill:#ffe875; stroke:#16703b; stroke-width:2; }
+#animation .function-ring { fill:none; stroke:#ffe875; stroke-width:7; }
+#animation .qr-module { shape-rendering:crispEdges; }
+#animation .scan-cell { fill:#ffe875; fill-opacity:.45; stroke:#000; stroke-width:1; }
+#animation .trail { fill:none; stroke:#b8b8b8; stroke-width:1.2; }
+#animation .finder-dot { fill:#ffe875; stroke:#000; stroke-width:1; }
+@media(max-width:700px) {
+  #animation .byte { font-size:19px; }
+  #animation .bit { font-size:17px; }
+}

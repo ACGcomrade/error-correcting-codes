@@ -1,0 +1,46 @@
+.barcode-film main { width:min(1120px,100%); }
+.barcode-film a { color:inherit; text-underline-offset:3px; }
+.film-controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; border-top:1px solid; padding:14px 0 0; }
+.film-controls label { display:flex; align-items:center; gap:8px; margin-left:14px; }
+.film-controls .condition-control { margin-left:auto; }
+.film-controls select { font-size:12px; }
+.timeline-row { display:flex; align-items:center; gap:16px; padding:8px 0; }
+.timeline-row input[type="range"] { margin:0; min-width:70px; flex:1; background:linear-gradient(to right,var(--highlight) 0 var(--progress,0%),transparent var(--progress,0%) 100%); }
+.timeline-row input[type="range"]::-webkit-slider-runnable-track { background:#000; }
+.timeline-row output { font-size:12px; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.film { border-block:1px dashed; }
+#animation { display:block; width:100%; height:auto; overflow:hidden; }
+#animation text { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; fill:#000; }
+#animation .tiny { font-size:11px; }
+#animation .label { font-size:13px; }
+#animation .number { font-size:20px; font-variant-numeric:tabular-nums; }
+#animation .large { font-size:26px; font-weight:bold; }
+#animation .small-number { font-size:15px; font-variant-numeric:tabular-nums; }
+#animation .section-label { font-size:12px; letter-spacing:.5px; }
+#animation .ink { stroke:#000; fill:none; stroke-width:1.2; }
+#animation .guide { stroke:#b8b8b8; fill:none; stroke-width:1; stroke-dasharray:3 5; }
+#animation .paper { fill:#fff; stroke:#000; stroke-width:1.2; }
+#animation .error-box { fill:#fff0ee; stroke:#b42318; stroke-width:2; }
+#animation .error-solid { fill:#b42318; }
+#animation .on-error { fill:#fff; }
+#animation .yellow { fill:var(--highlight); }
+#animation .muted { fill:#626262; }
+#animation .bold { font-weight:bold; }
+#animation .failure { fill:#b42318; }
+#animation .success { fill:#16703b; }
+.subtitle { display:flex; align-items:baseline; gap:18px; min-height:68px; border-top:1px solid; padding:14px 0; }
+.subtitle p { margin:0; max-width:80ch; }
+.cue { font-size:11px; flex:0 0 80px; letter-spacing:1px; font-weight:bold; }
+@media(max-width:700px) {
+  .barcode-film main { padding:20px 14px; }
+  .film-controls { gap:8px; }
+  .film-controls label { margin-left:auto; }
+  .film-controls .condition-control { width:100%; justify-content:space-between; margin:4px 0 0; }
+  .condition-control select { width:200px; max-width:75%; }
+  .timeline-row { gap:10px; }
+  .timeline-row output { font-size:11px; }
+  .subtitle { gap:10px; min-height:94px; font-size:13px; }
+  .cue { flex-basis:60px; font-size:10px; }
+  #animation .tiny { font-size:13px; }
+  #animation .label,#animation .section-label { font-size:15px; }
+}

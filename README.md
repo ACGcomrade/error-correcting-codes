@@ -1,53 +1,39 @@
 # Error-Correcting Codes
 
-How can a few extra bits reveal not only that a message has changed, but also which bit to correct?
-
-A growing collection of tutorials on error-correcting codes, starting with Hamming codes from a linear algebra perspective. Each topic has its own PDF; further tutorials will be added as they are completed.
+Tutorials and visualizations on how extra information makes errors detectable and correctable. We begin with barcodes and QR codes, then use linear algebra to construct Hamming codes and explain their limits.
 
 ## Tutorials
 
-| Tutorial | Status | Read |
-| --- | --- | --- |
-| Hamming Codes: A Linear Algebra Tutorial | Available | [PDF](tutorial_draft_Hamming_01_1_02/tutorial_draft_Hamming_01_1_02.pdf) |
-| Reed–Solomon Codes | Planned | — |
+Recommended reading order: **Why Code? → Hamming Codes**.
+
+| No. | Tutorial | Status | Read |
+| --- | --- | --- | --- |
+| 01 | Why Code? | Available | [PDF](tutorial_why_code/tutorial_why_code.pdf) |
+| 02 | Hamming Codes: A Linear Algebra Tutorial | Available | [PDF](tutorial_Hamming_Code/tutorial_Hamming_Code.pdf) |
+| 03 | Reed–Solomon Codes | In progress | — |
+
+## Why Code?
+
+This tutorial follows a barcode from a printed label to a product lookup, then explores how QR codes recover damaged messages. Using check-digit arithmetic, diagrams, and a simple straight-line recovery example, you will learn what redundancy adds and why detecting an error is different from correcting it.
 
 ## Hamming Codes: A Linear Algebra Tutorial
 
-This tutorial starts with binary position labels and parity-check matrices, constructs valid codewords as a kernel, and explains encoding through a choice of basis. It then uses Hamming distance and the geometry of Hamming balls to establish the limits of error detection and correction.
+This tutorial constructs Hamming codes and shows how to encode a message, locate a single flipped bit, and establish correction limits. Using linear algebra over F₂—parity-check matrices, kernels, bases, and syndromes—alongside Hamming distance and geometric diagrams, you will learn why the construction works and when decoding can fail.
 
-The prerequisites are vector spaces, linear maps, kernels, bases, invertibility, and the rank-nullity theorem. All vector and matrix arithmetic takes place over the binary field F₂.
-
-The introduction motivates redundancy and distinguishes detecting corruption from recovering the original message. The fourteen sections build the argument in three stages.
-
-### Constructing and using the code
-
-| Section | Topic |
+| Topic | Core idea and mathematical tools |
 | --- | --- |
-| 1. Representing bit strings and their positions | Work over F₂ and assign a binary vector label to each position. |
-| 2. Turning position labels into parity checks | Build H, define the code as ker(H), and count information and check bits using rank-nullity. |
-| 3. What the checks reveal about an error | Derive the syndrome s = Hy = He. |
-| 4. Why every single-bit error can be located | Show that a single error selects a column of H, identifying its position. |
-| 5. Why the conclusion requires the single-error assumption | Explain how multiple errors can share a syndrome and cause miscorrection. |
-| 6. Choosing which positions hold check digits | Characterize valid check positions as a basis and derive p = H_P⁻¹H_Dd, with a worked seven-bit example. |
-
-### Explaining the detection and correction limits
-
-| Section | Topic |
-| --- | --- |
-| 7. Measuring errors with Hamming weight and distance | Distinguish the weight of a word from the distance between two words. |
-| 8. Why nonzero codewords are exactly the undetectable error patterns | Identify the errors that preserve every parity check. |
-| 9. Why minimum distance equals minimum nonzero weight | Prove the equality for linear codes and derive the guaranteed detection limit. |
-| 10. Reading minimum distance from the columns of the check matrix | Connect minimum distance to the smallest dependent set of columns. |
-| 11. Why correcting up to t errors requires minimum distance greater than 2t | Prove both directions of the unique-correction criterion. |
-
-### Seeing the geometry and tradeoffs
-
-| Section | Topic |
-| --- | --- |
-| 12. Hamming balls as sets of possible received words | Define balls and spheres, count their sizes, and connect disjoint balls to correction. |
-| 13. A three-bit example bringing the arguments together | Examine the code {000, 111}, its syndromes, and overlapping correction regions. |
-| 14. Word length, redundancy, and correction regions | Explain perfect radius-one packing, compare Hamming and repetition codes, and relate Hamming distance to the hypercube graph. |
+| 1. Position Labels and Parity Checks | Construct the check matrix from binary position labels, then use kernels and rank-nullity to determine the code’s dimension and number of codewords. |
+| 2. Syndrome and Single-Error Decoding | Use matrix linearity over F₂ and standard basis vectors to show why a single flipped bit produces its position’s label as the syndrome. |
+| 3. Encoding and Choosing Check Positions | Use bases and invertible column submatrices to identify valid check positions and solve uniquely for the check bits. |
+| 4. Ambiguity, Weight, and Minimum Distance | Use syndrome collisions, Hamming weight, and linear subspace structure to explain decoding ambiguity and relate minimum distance to the smallest undetectable error. |
+| 5. Minimum Distance from the Columns of H | Relate minimum distance to the smallest linearly dependent set of check-matrix columns and prove that Hamming codes have minimum distance three. |
+| 6. Correction Radius and Hamming Balls | Use syndrome-map injectivity and weight inequalities to derive the condition d_min > 2t, then interpret guaranteed correction through disjoint Hamming balls. |
+| 7. Counting Errors and the Hamming Bound | Count errors with binomial coefficients and compare disjoint ball volumes to derive the Hamming bound and show why Hamming codes are perfect. |
+| 8. Information Bits and Correction Radius | Compare Hamming and repetition codes using dimension, minimum distance, and ball volumes to explain the tradeoff between information bits and correction radius. |
+| Appendix A. Reading the Grid Figures | Connect the grid figures to the binary hypercube using an explicit coordinate map whose Manhattan distances equal Hamming distances. |
 
 ## Try it yourself
 
-The companion [Hamming(7,4) interactive page](https://acgcomrade.github.io/error-correcting-codes/) lets you tweak a binary message and its error probability, flip individual bits, and follow the matrix calculations. Play around with single and multiple errors to see when detection works, when correction succeeds, and when a valid output is still the wrong message.
+- [Barcode](https://acgcomrade.github.io/error-correcting-codes/why-code.html): see how a printed pattern becomes a product identifier, and how a check digit catches a misread.
+- [QR code](https://acgcomrade.github.io/error-correcting-codes/qr-code.html): see how a square pattern becomes a message, how extra check bytes help recover damaged data, and why correction has limits.
+- [Hamming(7,4)](https://acgcomrade.github.io/error-correcting-codes/): visualize encoding and syndrome decoding, and compare single-bit correction with failures under multiple bit flips.
