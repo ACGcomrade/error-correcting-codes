@@ -1,6 +1,6 @@
 # Error-Correcting Codes
 
-Tutorials and visualizations on how extra information makes errors detectable and correctable. We begin with barcodes and QR codes, then use linear algebra to construct Hamming codes and explain their limits.
+Tutorials and visualizations on how extra information makes errors detectable and correctable. We begin with parity checks and barcodes, then use linear algebra to construct Hamming codes and explain their limits.
 
 ## Tutorials
 
@@ -14,7 +14,7 @@ Recommended reading order: **Why Code? → Hamming Codes**.
 
 ## Why Code?
 
-This tutorial follows a barcode from a printed label to a product lookup, then explores how QR codes recover damaged messages. Using check-digit arithmetic, diagrams, and a simple straight-line recovery example, you will learn what redundancy adds and why detecting an error is different from correcting it.
+This tutorial starts with Hamming's unfinished computations and builds from allowed bit strings to parity checks, repetition, and decimal check digits. It then explains UPC barcodes through run widths, framing, scan direction, and checksum calculations, ending with the question of how to design codes that detect errors or correct them.
 
 ## Hamming Codes: A Linear Algebra Tutorial
 

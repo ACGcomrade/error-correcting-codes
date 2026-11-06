@@ -1,0 +1,530 @@
+% !TEX root = main.tex
+% Official Why Code tutorial.
+% Figures: figures/why-code/.
+\documentclass[11pt,letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage[colorlinks=true,linkcolor=teal!60!black,urlcolor=teal!60!black,citecolor=teal!60!black]{hyperref}
+\definecolor{ink}{HTML}{18343D}
+\definecolor{accent}{HTML}{087F8C}
+\definecolor{errorred}{HTML}{C94B4B}
+\definecolor{gold}{HTML}{D29A30}
+\hypersetup{pdftitle={Why Code?},pdfsubject={A visual introduction to error detection, practical barcodes, and the need for Hamming codes}}
+\graphicspath{{figures/why-code/}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\captionsetup{font=small,labelfont=bf,justification=raggedright,singlelinecheck=false,hypcap=false}
+\newcommand{\bits}[1]{\texttt{#1}}
+\newcommand{\scene}[3][0.26]{%
+\par\smallskip\noindent
+\begin{minipage}{\linewidth}
+\centering
+\includegraphics[width=\linewidth,height=#1\textheight,keepaspectratio]{#2}
+\captionof{figure}{#3}
+\end{minipage}\par\smallskip}
+\newcommand{\nextstep}[1]{\par\medskip{\color{accent}\bfseries #1}\par}
+\raggedbottom
+\begin{document}
+
+{\LARGE\color{ink} Why Code?}
+
+\section{An unfinished job}
+Bad tape, a reading error, or a changed stored value can make a computation fail. For example, a missing hole changes an intended $1$ into a $0$.
+
+\scene[0.30]{a1-punched-tape-mismatch.png}{The intended bits are shown for comparison. The machine does not know them; it must check the recording using an agreed rule.}
+
+When a check detects an error, the machine can try again. A temporary reading or computation fault may disappear on a retry. Re-reading alone cannot restore a missing hole. One remedy is to repair or replace the tape.
+
+If repeated attempts fail, skip the current job and continue with the next one. Hamming encountered this over two weekends: after three failed attempts, his machine abandoned the job and moved on.\cite{hamming}
+
+\[
+\text{check fails}
+\ \longrightarrow\ \text{retry}
+\ \longrightarrow\ \text{still fails: skip this job}.
+\]
+The machine can continue, but this job is still unfinished. Hamming wanted the machine to locate and correct the error so the job could finish.
+
+\nextstep{First, how can the machine recognize an error?}
+
+\clearpage
+\section{Agree on which recordings are allowed}
+The machine does not know which word was sent. It knows which words the sender was allowed to send.
+
+For example, agree on four allowed recordings:
+\[
+000,\quad011,\quad101,\quad110.
+\]
+The sender encodes each message as one of these words. A received word outside this list signals an error.
+
+\scene[0.30]{a2-rulebook-flat.png}{The received $001$ matches none of the allowed words. The crosses mark failed comparisons.}
+
+Store the four words in a list. Each word has three bits:
+\[
+\underbrace{4}_{\text{words}}
+\times
+\underbrace{3}_{\text{bits per word}}
+=12\text{ stored bits}.
+\]
+To reject $001$, a sequential search must try all four entries.
+
+In general, storing $M$ words of $n$ bits requires $nM$ bits. A sequential search compares up to $M$ words, checking up to $n$ positions in each. These are costs of this list method; indexing can speed up the search.
+
+\clearpage
+\textbf{A large rulebook for a short input.}
+A 20-bit block has $2^{20}$ possible patterns. Suppose we allow half:
+\[
+M=\frac{2^{20}}2=524{,}288.
+\]
+\scene[0.43]{a3-catalog-flat.png}{One received block and a large stored list. Only the first few entries are shown.}
+
+Storing these words explicitly requires
+\[
+524{,}288\times20=10{,}485{,}760\text{ bits}.
+\]
+Suppose we have one million bits for this list. We can store only
+\[
+\frac{1{,}000{,}000}{20}=50{,}000\text{ words}<524{,}288.
+\]
+The list does not fit. Also, for every received word is absent, a sequential search must be operated, which takes a lot of time to do so.
+
+\nextstep{Can we check the received word with a short computation, without storing this large list?}
+
+\clearpage
+\section{Start with the input, then add}
+Instead of searching the list, compute directly from the received bits. Start with their sum:
+\[
+S=x_1+\cdots+x_n,\qquad x_i\in\{0,1\}.
+\]
+Each hole contributes $1$. Look at our four allowed recordings:
+\begin{center}
+\begin{tabular}{cc}
+\toprule
+Recording & $S$ \\
+\midrule
+\bits{000} & 0 \\
+\bits{011} & 2 \\
+\bits{101} & 2 \\
+\bits{110} & 2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Their sums are all even. For three bits, this rule describes exactly the same allowed set:
+\[
+\boxed{\text{even }S:\ \text{pass}\qquad\text{odd }S:\ \text{fail}.}
+\]
+
+\textbf{Make the sender follow the rule.}
+Append one check bit. If the data has an odd number of ones, append $1$. If it already has an even number, append $0$.
+\scene[0.34]{a4-parity-flat.png}{Gold marks the added position. Both choices make the total number of holes even.}
+\[
+\underbrace{k}_{\text{data bits}}+
+\underbrace{1}_{\text{check bit}}=
+\underbrace{n}_{\text{recorded bits}}.
+\]
+
+\clearpage
+\textbf{Keep only the parity.}
+We only need to remember even or odd. Reading $0$ leaves this state unchanged. Reading $1$ switches it.
+
+Use $0$ for even and $1$ for odd. For the received word \bits{011}:
+\[
+\underbrace{0}_{\text{start}}
+\xrightarrow{\text{read }0}0
+\xrightarrow{\text{read }1}1
+\xrightarrow{\text{read }1}0.
+\]
+The ordinary sum is $2$; its parity is $0$. This two-state addition is arithmetic in $\mathbb F_2=\{0,1\}$:
+\[
+1+1=0\quad\text{in }\mathbb F_2.
+\]
+Read all $n$ positions, including the check bit. Keep one bit of parity state, instead of storing the list of allowed words.
+
+\textbf{One changed bit is detected.}
+A single bit flip changes the ordinary sum by $+1$ or $-1$. An even sum becomes odd, so the check fails.
+\scene[0.28]{a5-one-flip-flat.png}{One missing hole changes $011$ to $001$, and the hole count from two to one.}
+
+The machine need not know the original \bits{011}. It sums the received \bits{001} and finds an odd total.
+
+\clearpage
+\textbf{Detection does not guarantee correction.}
+Both \bits{000} and \bits{011} can become \bits{001} after one flip.
+\scene[0.34]{a6-ambiguous-flat.png}{Two allowed originals give the same received word.}
+
+The check detects an error, but cannot tell which bit to change. The error process can merge different originals; this does not mean the encoding itself is many-to-one.
+
+\textbf{Two errors can go undetected.}
+Two added holes change \bits{000} into \bits{011}.
+\scene[0.27]{a7-two-flips-flat.png}{Both sums are even. The recording changed, but the check passes.}
+
+\nextstep{Can we use extra positions to separate the allowed recordings further, so that two flips are still detectable?}
+
+\clearpage
+\section{Spend more positions}
+Choose a new code for one data bit. Record it three times:
+\[
+0\longmapsto000,\qquad1\longmapsto111.
+\]
+The two allowed recordings differ in all three positions. Changing only one or two positions cannot turn one into the other.
+\scene[0.24]{a8-repeat-flat.png}{One or two changed positions fail the check. Three changes can reach the other allowed recording.}
+
+\textbf{Correction needs an error bound.}
+The check detects one or two changed bits. To correct an error, assume that at most one bit changed:
+\[
+000\xrightarrow{\text{1 change}}001
+\xleftarrow{\text{2 changes}}111.
+\]
+Under this assumption, the received \bits{001} must come from \bits{000}. The majority recovers $0$. If two changes are possible, \bits{111} could also produce \bits{001}, and the majority can be wrong.
+
+\textbf{Compare the same message.}
+For the data \bits{01}, first reuse the preceding section's rule: append one check bit at the end so the total number of ones is even.
+\[
+\begin{aligned}
+01&\longmapsto01\,\textcolor{gold}{\boxed1}
+&&\text{appended even-parity bit: 3 positions},\\[3pt]
+01&\longmapsto000\,111
+&&\text{repeat each data bit: 6 positions}.
+\end{aligned}
+\]
+In general,
+\[
+k\text{ data bits}\longmapsto3k\text{ recorded bits},
+\qquad2k\text{ extra bits}.
+\]
+For each triple, count the ones: $0$ or $3$ passes the check. The count $0,1,2,3$ fits in two bits of checking state.
+
+\clearpage
+\textbf{Use a similar idea for decimal digits.}
+Parity uses one check bit for a whole binary block. Try one check digit for a block of decimal digits $0,\ldots,9$.
+
+The digits $2,4,1$ sum to $7$. Append $3$ to reach $10$. If the sum is already $10$, append $0$.
+\scene[0.33]{a9-decimal-flat.png}{Each cell is a decimal digit, not a bit. Gold marks the appended check digit.}
+
+The target is not only $10$: for example, $17+3=20$. The rule is
+\[
+\boxed{\text{the total sum is a multiple of }10.}
+\]
+The choices $0,\ldots,9$ can complete any remainder after division by $10$.
+
+\textbf{Cost and limits.}
+We add one decimal digit per block. Changing one digit changes the sum by a nonzero amount between $-9$ and $9$, so the check fails. Two changes can cancel:
+\scene[0.24]{a10-decimal-cancel-flat.png}{The changes $+1$ and $-1$ cancel. Both totals are $10$, so the changed recording still passes.}
+
+Swapping two digits also leaves the sum unchanged. This check does not generally tell us how to correct an error.
+
+\clearpage
+\textbf{One decimal digit needs several tape positions.}
+Suppose we give every decimal digit its own binary pattern of the same fixed length. Three bits offer only eight patterns. We need at least four:
+\[
+2^3=8<10\leq16=2^4.
+\]
+Choose ten distinct four-bit patterns, one for each digit. The six unassigned patterns are invalid. Here is one possible assignment for the digits in our example:
+\scene[0.31]{a11-decimal-bit-cost.png}{Four positions per decimal digit. The last four positions store the check digit $3$. The group boundaries are fixed.}
+
+With this encoding, three data digits occupy twelve tape positions. One check digit adds four more:
+\[
+\underbrace{3\cdot4}_{\text{data positions}}+
+\underbrace{1\cdot4}_{\text{check positions}}=16\text{ positions}.
+\]
+Thus one decimal check digit costs four extra binary positions on this tape. During checking, the running remainder $0,\ldots,9$ also fits in four bits of state; that is a separate memory cost.
+
+Barcodes use a related decimal check. Distinguishing ten digits is only part of their design.
+\nextstep{How should we print these patterns so that a scanner can find and read the digits?}
+
+\clearpage
+\section{Give each digit a printed pattern}
+Four bits can distinguish ten decimal digits. A printed label must also let a scanner find and measure the pattern.
+
+Woodland and Silver explored automatic product identification. Laurer's team at IBM developed UPC, adopted in 1973 and first used at a retail checkout in 1974.\cite{ibm}
+
+UPC is the general name. Here we study its regular twelve-digit form, \emph{UPC-A} (UPC Version A). Below, ``UPC'' refers to this form.
+
+\textbf{Which side of the middle?}
+A middle marker separates two blocks of six digits:
+\[
+\underbrace{\text{six digits}}_{\text{left half}}
+\quad\boxed{\text{middle}}\quad
+\underbrace{\text{six digits}}_{\text{right half}}.
+\]
+Left and right refer to positions on the printed label. Read the label from left to right. Each digit has four nonempty runs, with these rules:
+\[
+\begin{array}{c|c|c}
+\text{digit's position}&\text{run colors in order}&\text{black-module count}\\ \hline
+\text{left of middle}&\text{white--black--white--black}&\text{odd}\\
+\text{right of middle}&\text{black--white--black--white}&\text{even}
+\end{array}
+\]
+A \emph{module} is one equal-width position: $0$ for white, $1$ for black. A run can occupy several modules. The odd/even rule counts black modules, not black runs; every digit has two black runs. This is \emph{character parity}.
+
+\textbf{Agree on a table.}
+UPC uses seven modules per digit. Its left codebook assigns \bits{0001101} to digit $0$:
+\scene[0.23]{e1-lookup.png}{Encoding chooses the assigned pattern. Decoding looks up that same pattern and returns its digit.}
+
+The arrow returns $0$ because of this agreement. As an ordinary binary numeral, $(0001101)_2$ would instead have value $13$.
+
+Each side must represent all ten digits, $0,1,\ldots,9$. Each therefore needs \emph{at least ten different patterns}. With fewer, two digits would share a pattern. More than ten is allowed; some patterns could be left unused.
+
+\clearpage
+\textbf{Why is seven the smallest width under these rules?}
+Count the left-side patterns first. Their color order is fixed; we vary the four positive integer widths $a,b,c,d$:
+\scene[0.15]{e4-four-runs.png}{One allowed pattern: widths $(a,b,c,d)=(3,2,1,1)$ give the left-side digit $0$.}
+
+The total width is $n=a+b+c+d$. Black occupies $B=b+d$ modules and must be odd. White occupies $n-B$. Each color needs at least two modules, one for each of its runs.
+
+\textbf{Try six modules.}
+Then $B=3$ and white also totals $3$. Black has two splits, $(b,d)=(1,2)$ or $(2,1)$. White has two splits, $(a,c)=(1,2)$ or $(2,1)$. Every black split can pair with either white split:
+\[
+\underbrace{2}_{\text{black splits}}\cdot
+\underbrace{2}_{\text{white splits}}=4\text{ patterns}<10.
+\]
+These combinations change the widths. The colors stay in the fixed order white--black--white--black.
+
+\textbf{Try seven modules.}
+Now the odd black total can be $3$ or $5$:
+\[
+\begin{array}{c|c|c}
+\text{black total}&\text{white total}&\text{number of patterns}\\ \hline
+3&4&2\cdot3=6\\
+5&2&4\cdot1=4
+\end{array}
+\qquad 6+4=10.
+\]
+Together, these combinations give ten distinct left-side patterns, enough to represent all ten digits.
+
+\textbf{Could anything shorter work?}
+Four nonempty runs need at least four modules. At width $4$, the only left pattern is \bits{0101}, which fails odd parity. At width $5$, black must total $3$ and white $2$, giving $2\cdot1=2$ patterns:
+\[
+\begin{array}{c|ccccc}
+\text{width }n&n<4&4&5&6&7\\ \hline
+\text{allowed left patterns}&0&0&2&4&10
+\end{array}
+\]
+At width $7$, a left pattern has odd $B$ black modules and even $7-B$ white modules. For pattern on right side, the ten resulting right patterns have order black--white--black--white and an even black count. It has smae one-to-one pattern to digit logic as left pattern but color reverse. (you may think that it will make the bar code looking symmetric, but not! It is a bit flip instead of a flip by middle :-O)
+
+Thus seven is the \emph{minimum width for both sides under these run and parity rules}. Longer patterns are possible. Left and right counts cannot be pooled: each side needs its own ten digit meanings.
+
+\clearpage
+\textbf{Could a barcode be all white or all black?}
+Yes, under a different rule. The repetition code allows $0\mapsto000$ and $1\mapsto111$. We can print those bits as white or black regions if the block boundaries are supplied:
+\scene[0.28]{e2-uniform.png}{Uniform patterns are valid for repetition. UPC chooses a different set of patterns. The outlines are teaching guides.}
+
+UPC requires two white runs and two black runs in every digit. A uniform patch fails that rule. A full UPC label also contains mixed guard patterns, so it cannot be entirely white or black.
+
+\textbf{Give the scanner more paths.}
+A thin row is easy to miss. Extend the black regions vertically:
+\scene[0.25]{b1-height.png}{Extra height gives more paths through the same pattern. It costs label area, but adds no digits.}
+
+A scan may pass above or below a local scratch.
+
+\clearpage
+\textbf{Read one digit.}
+For now, suppose the boundaries of one seven-module digit are already marked. Move a light spot across it at a locally steady speed. White reflects more light than black.
+
+The sensor measures how long each white or black run lasts:
+\scene[0.29]{b2-timing.png}{The boundaries $0,12,20,24,28$ give durations $12,8,4,4$ clock ticks. These are measured times, not bit values.}
+
+The whole digit takes $28$ ticks and spans seven modules. Its local width unit is
+\[
+u=\frac{12+8+4+4}{7}=4\text{ ticks per module}.
+\]
+Convert each measured duration to a width, then expand the runs in their observed color order:
+\[
+(12,8,4,4)\div4=(3,2,1,1)
+\quad\longrightarrow\quad
+\underbrace{000}_{3\text{ white}}\,
+\underbrace{11}_{2\text{ black}}\,
+\underbrace{0}_{1\text{ white}}\,
+\underbrace{1}_{1\text{ black}}.
+\]
+
+% Keep the lookup explanation and its transition together.
+\noindent\begin{minipage}{\linewidth}
+The encoder's table assigned this pattern to digit $0$. The reader uses the same table in reverse:
+\[
+\text{digit }0\ \xrightarrow{\text{encode}}\ \bits{0001101},
+\qquad
+\bits{0001101}\ \xrightarrow{\text{look up}}\ \text{digit }0.
+\]
+\nextstep{We supplied the digit boundaries. How can a scanner find them on a real label?}
+\end{minipage}
+
+\clearpage
+\section{Find the boundaries and direction}
+A scanner may cross nearby text before reaching the barcode. Leave a blank margin on each side: a \emph{quiet zone}.
+
+Then add three known patterns:
+\[
+\underbrace{101}_{\text{start}},
+\qquad
+\underbrace{01010}_{\text{middle}},
+\qquad
+\underbrace{101}_{\text{end}}.
+\]
+\scene[0.23]{b4-frame.png}{The outer guards and quiet zones mark candidate endpoints. The middle guard supplies an internal boundary.}
+
+The short alternating runs provide a width reference. From a candidate start, the reader expects six digits, the middle guard, six more digits, and the end guard:
+\scene[0.21]{b5-grouping.png}{Each digit has four runs spanning seven modules. The reader groups the measured runs and tests their widths.}
+
+The structure uses
+\[
+\underbrace{3}_{\text{start}}+
+\underbrace{6\cdot7}_{\text{left digits}}+
+\underbrace{5}_{\text{middle}}+
+\underbrace{6\cdot7}_{\text{right digits}}+
+\underbrace{3}_{\text{end}}=95\text{ modules}.
+\]
+Each quiet zone adds at least nine more module widths. Finding \bits{101} alone proves little: it can also occur inside a digit. The reader tests the complete arrangement.
+
+\clearpage
+\textbf{What does the middle let us do?}
+A slanted scan can leave the top of the bars before reaching the other end. Making the bars taller helps, but costs area.
+
+The middle guard lets each half have two recognizable boundaries:
+\[
+[\,101\mid\text{six digits}\mid01010\,],
+\qquad
+[\,01010\mid\text{six digits}\mid101\,].
+\]
+\scene[0.37]{e5-half-scans.png}{Neither path crosses the whole label. Each crosses one outer guard and the full middle guard, enclosing six digits.}
+
+Path A supplies \bits{036000}; path B supplies \bits{291452}. A reader that supports combining half-readings can join compatible halves from the same label:
+\[
+\underbrace{036000}_{\text{left half}}\ \Vert\
+\underbrace{291452}_{\text{right half}}
+=\underbrace{036000291452}_{\text{candidate number}}.
+\]
+Here $\Vert$ means join the digit strings. The complete number must still pass its checksum. The middle does not reconstruct missing digits; it makes shorter, bounded readings possible.
+
+\nextstep{How does the reader know which half it has, and which way it crossed the bars?}
+
+\clearpage
+\textbf{Read the same pattern in both directions.}
+The guards \bits{101} and \bits{01010} look the same backward. They cannot decide direction by themselves.
+
+For digit $0$, the left pattern is $L(0)=\bits{0001101}$. The right pattern swaps black and white: $R(0)=\bits{1110010}$. Thus the black-module counts are $3$ and $7-3=4$.
+\scene[0.28]{e3-direction.png}{Reading the right-side zero backward gives \bits{0100111}. Its four black modules exclude every left-side digit pattern.}
+
+The left and right character-parity tests sum bits modulo two. Reversing positions leaves that sum unchanged. But UPC uses \emph{different required sums on the two sides}:
+\[
+\begin{array}{c|cc}
+\text{scan from an outer guard}&\text{first six digits}&\text{next six digits}\\ \hline
+\text{left to right}&\text{odd}&\text{even}\\
+\text{right to left}&\text{even}&\text{odd}
+\end{array}
+\]
+For a complete reading, if the even half comes first, reverse the scan before using the normal left/right lookup tables. This reverses both the digit order and the bits within each digit.
+
+\textbf{What about a half-reading?}
+For a correctly grouped digit, its ends and parity identify four distinct cases:
+\[
+\begin{array}{c|cc}
+&\text{first and last bits}&\text{black count}\\ \hline
+\text{left, forward}&0\ldots1&\text{odd}\\
+\text{left, backward}&1\ldots0&\text{odd}\\
+\text{right, forward}&1\ldots0&\text{even}\\
+\text{right, backward}&0\ldots1&\text{even}
+\end{array}
+\]
+With valid boundaries and direction, each side's ten patterns have ten different meanings. Parity alone is many-to-one; the full pattern lookup is one-to-one. Damage can still change one allowed pattern into another.
+
+\nextstep{Character parity checks one digit pattern. What rule checks the number across all twelve digits?}
+
+\clearpage
+\section{Check the number, then use it}
+The plain decimal sum missed swaps:
+\[
+1+2=2+1.
+\]
+Give the two positions different weights:
+\[
+3\cdot1+2=5,\qquad3\cdot2+1=7.
+\]
+Now that swap changes the check.
+
+UPC-A alternates weights $3,1$ from the left. For the example we have been reading:
+\scene[0.19]{d4-upc-weights.png}{Multiply each digit by the weight beneath it. Gold marks the final check digit.}
+
+First add the weighted contributions of the eleven data digits:
+\[
+\underbrace{3(0+6+0+2+1+5)}_{42}
++\underbrace{(3+0+0+9+4)}_{16}=58.
+\]
+Append $2$ so that the total is a multiple of ten:
+\[
+58+\boxed2=60.
+\]
+This is the UPC check-digit rule.
+
+\textbf{What does this protection cost?}
+There are eleven data digits and one check digit. In this printed format, each uses seven modules:
+\[
+\underbrace{11\cdot7}_{77\text{ data modules}}
++\underbrace{1\cdot7}_{7\text{ check modules}}
++\underbrace{3+5+3}_{11\text{ guard modules}}
+=95.
+\]
+The quiet zones require additional blank space. The running remainder $0,\ldots,9$ fits in four bits. The digit's position determines its weight.
+
+\textbf{Why not use weight $2$?}
+Changing a digit by $5$ would change its contribution by $2\cdot5=10$, which the check would miss. With weight $3$, a single digit change $\Delta$ contributes $3\Delta$; with weight $1$, it contributes $\Delta$.
+
+For $0<|\Delta|<10$, neither is a multiple of ten. Thus every single digit substitution is detected. Some swaps still pass:
+\[
+3\cdot1+6=9,\qquad3\cdot6+1=19.
+\]
+Their difference is ten, so their remainders agree.
+
+\clearpage
+\textbf{Follow one item through a checkout.}
+A laser scanner sweeps light across the label; an imaging scanner finds paths in an image. The decoder measures widths, tests the frame and digit patterns, and checks the candidate number.
+\scene[0.25]{b8-checkout.png}{A candidate that passes the tests reaches the product lookup. The product record supplies its price.}
+
+If a test fails, try another reading. The LS2208, for example, makes about 100 sweeps per second.\cite{zebra} A new path may avoid a local defect:
+\scene[0.27]{b7-damage.png}{A local scratch leaves a clean path. A full-height obstruction can block every complete path through the symbol.}
+
+Some clean area in every column is insufficient. The clean pieces must form a usable path, or provide enough compatible partial readings.
+
+If scanning keeps failing, an operator can reposition the item or enter its printed digits. More attempts help, but they do not guarantee a correct reading. The same damage can cause the same mistake again.
+
+\nextstep{Suppose the check detects an error. Does the failed check also tell us how to repair it?}
+
+\clearpage
+\section{The limit of this check}
+Two numbers can pass the UPC checksum and still lead to the same rejected reading:
+\scene[0.35]{b9-ambiguity.png}{Both original candidates have weighted sum $60$. One decimal digit change in either produces the received number, whose sum is $61$.}
+
+The check detects a problem. Even if we know that exactly one digit changed, it does not identify the original. Choosing either candidate can be wrong.
+
+\textbf{What if we know which digit is missing?}
+That is a different problem. Suppose only the second digit is unreadable and every other digit is correct:
+\[
+\bits{0?6000291452}:\qquad
+57+x\equiv0\pmod{10}
+\quad\Longrightarrow\quad x=3.
+\]
+The known digits contribute $57$; the missing digit has weight $1$. There is just one choice in $0,\ldots,9$. So UPC can recover a missing digit under these assumptions. It cannot guarantee correction of one changed digit at an unknown position.
+
+\noindent\begin{minipage}{\linewidth}
+The barcode gives us one working design. Its rules serve different needs: readable stripes, known boundaries, and checks on the digits. Their usefulness depends on the errors we expect and the space we can spend.
+
+\nextstep{Can we describe these rules in a common mathematical framework? What conditions should a design satisfy in different settings? How can we use those conditions to build codes that detect errors, or even let a decoder correct them automatically?}
+\end{minipage}
+
+\clearpage
+\begin{thebibliography}{9}
+\small
+\bibitem{hamming} Richard W. Hamming. \href{https://savage.nps.edu/hamming/HammingLearningToLearnRecovered/Hamming12ErrorCorrectingCodesTranscript.21April1995.pdf}{Error Correcting Codes, lecture transcript}, Naval Postgraduate School, April 21, 1995, pp. 1--2.
+\bibitem{ibm} IBM. \href{https://www.ibm.com/history/upc}{The UPC}. Official history of the barcode's development and first retail use.
+\bibitem{zebra} Zebra. \href{https://www.zebra.com/content/dam/support-dam/en/documentation/unrestricted/guide/product/ls2208-product-reference-guide-en-us.pdf}{LS2208 Product Reference Guide}, June 2017. Technical specifications and UPC/EAN reading settings.
+\end{thebibliography}
+\end{document}

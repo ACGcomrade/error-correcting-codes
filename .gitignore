@@ -1,8 +1,17 @@
 .DS_Store
 node_modules/
 
-# Publish the finished tutorial PDF; keep authoring sources local.
+# Keep draft sources local; track the official Why Code source and PDF.
 *.tex
+!/tutorial_why_code/main.tex
 *.md
 !README.md
 /overleaf/
+
+# Local LaTeX Workshop preview and build files.
+/tutorial_why_code/main.pdf
+/tutorial_why_code/main.log
+/tutorial_why_code/main.synctex.gz
+/tutorial_why_code/main.aux
+/tutorial_why_code/main.out
+/tutorial_why_code/main.xdv
